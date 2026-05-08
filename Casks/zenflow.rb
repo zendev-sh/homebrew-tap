@@ -34,9 +34,15 @@ cask "zenflow" do
 
   binary "zenflow"
 
-  # No zap stanza required
+  postflight do
+    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/zenflow"]
+  end
 
   caveats <<~EOS
     Licensed under Apache-2.0. https://github.com/zendev-sh/zenflow/blob/main/LICENSE
+    zenflow is not yet Apple-notarised. The post-install hook strips
+    the macOS quarantine attribute so Gatekeeper does not block
+    first-run; if you reinstall manually, run:
+      xattr -dr com.apple.quarantine $(brew --prefix)/bin/zenflow
   EOS
 end
